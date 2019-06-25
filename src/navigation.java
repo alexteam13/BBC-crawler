@@ -25,7 +25,15 @@ public class navigation {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        add(p);
+    }
+
+    synchronized void add(parser p){
         todo.addAll(p.getLinks());
+    }
+
+    synchronized String get(){
+        return todo.pollFirst();
     }
 
     public boolean crawl (String starturl) throws IOException {
@@ -38,8 +46,7 @@ public class navigation {
         System.out.println(todo.size());
         while (todo.size()>=0){
             Runnable task = () -> {
-                String t = todo.pollFirst();
-                task(t, el);
+                task(get(), el);
              };
             ExecutorService service = Executors.newFixedThreadPool(3);
             Future result = service.submit(task);

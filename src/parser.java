@@ -19,7 +19,12 @@ public class parser {
             "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/535.1 (KHTML, like Gecko) Chrome/13.0.782.112 Safari/535.1";
 
     public void parse(String url, HashSet<Integer> lHash, elasticConnector el) throws IOException {
-        Document doc = Jsoup.connect(url).userAgent(USER_AGENT).get();
+        Document doc = null;
+        try {
+            doc = Jsoup.connect(url).userAgent(USER_AGENT).get();
+        } catch (IOException e) {
+            System.out.println(e);
+        }
         JSONObject jsonObject = new JSONObject();
         Elements links;
         if (doc != null) {   //если получили документ
@@ -44,7 +49,7 @@ public class parser {
             }
             builder.endObject();
 
-            if (isInteger(url.substring(url.length()-8))){
+            if ((isInteger(url.substring(url.length()-8)))&&(doc.select("ul[class=tags-list]").text()!=null)){
                 System.out.println("Writing to Elasticsearch...");
                 el.getBulkProcessor().add(new IndexRequest("bbc_news")
                         .source(builder));
