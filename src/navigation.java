@@ -1,9 +1,7 @@
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 public class navigation {
     private HashSet<Integer> lHash = new HashSet<Integer>();
@@ -25,15 +23,7 @@ public class navigation {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        add(p);
-    }
-
-    synchronized void add(parser p){
         todo.addAll(p.getLinks());
-    }
-
-    synchronized String get(){
-        return todo.pollFirst();
     }
 
     public boolean crawl (String starturl) throws IOException {
@@ -45,11 +35,15 @@ public class navigation {
         todo.addAll(first.getLinks());
         System.out.println(todo.size());
         while (todo.size()>=0){
-            Runnable task = () -> {
-                task(get(), el);
-             };
+            //Runnable task = new Runnable() {
+            //    public void run() {
+            String t = todo.pollFirst();
+            System.out.println(t);
+                    task(t, el);
+            //    }
+            //};
             ExecutorService service = Executors.newFixedThreadPool(3);
-            Future result = service.submit(task);
+            //Future result = service.submit(task);
             service.shutdown();
         }
         el.close();
